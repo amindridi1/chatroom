@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, jsonify
-import time
 
 app = Flask(__name__)
 
@@ -19,6 +18,12 @@ def send_message():
 @app.route('/get_messages', methods=['GET'])
 def get_messages():
     return jsonify(messages)
+
+@app.route('/reset_chat', methods=['POST'])
+def reset_chat():
+    global messages
+    messages = []  # Clear the chat history
+    return jsonify({'status': 'success'})
 
 if __name__ == '__main__':
     app.run(debug=True)
