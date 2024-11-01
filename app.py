@@ -1,19 +1,17 @@
-# app.py
 from flask import Flask, render_template
-from flask_socketio import SocketIO, send
+from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your_secret_key'
 socketio = SocketIO(app)
 
 @app.route('/')
-def home():
-    return render_template('chat.html')
+def index():
+    return render_template('index.html')
 
 @socketio.on('message')
 def handle_message(msg):
-    print(f"Message: {msg}")
-    send(msg, broadcast=True)  # Broadcasts message to all users
+    print('Message: ' + msg)
+    emit('message', msg, broadcast=True)  # Broadcast the message to all clients
 
 if __name__ == '__main__':
-    socketio.run(app)
+    socketio.run(app, debug=True)
