@@ -93,7 +93,6 @@
             font-size: 1em;
             opacity: 0;
             animation: bubble 0.7s ease forwards;
-            animation-delay: calc(0.1s * var(--index));
             transform: rotateY(10deg) translate3d(0, 10px, 0);
             transition: transform 0.3s ease;
         }
@@ -180,6 +179,7 @@
                 const item = document.createElement('div');
                 item.textContent = msg;
                 item.style.setProperty('--index', index);
+                item.classList.add('visible'); // Add class to trigger animation
                 messagesDiv.appendChild(item);
             });
 
@@ -194,7 +194,7 @@
         }
 
         // Load messages every second to update chat in real time
-        setInterval(loadMessages, 1000);
+        const intervalId = setInterval(loadMessages, 1000);
     </script>
 </head>
 <body>
