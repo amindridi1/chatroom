@@ -82,7 +82,7 @@
             color: #0ef;
         }
 
-        /* Neon-glow effect for messages */
+        /* Regular message styling without animation */
         #messages div {
             background: rgba(255, 255, 255, 0.1);
             padding: 12px;
@@ -91,19 +91,6 @@
             box-shadow: 0 0 15px rgba(14, 239, 255, 0.5);
             color: #0ef;
             font-size: 1em;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-        #messages div.new {
-            opacity: 1;
-            transform: translateY(0);
-            animation: bubble 0.7s ease forwards;
-        }
-
-        @keyframes bubble {
-            from { opacity: 0; transform: translateY(20px) scale(0.9); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         /* Input box styling */
@@ -175,11 +162,9 @@
             const messagesDiv = document.getElementById('messages');
             messagesDiv.innerHTML = '';  // Clear current messages
 
-            messages.forEach((msg, index) => {
+            messages.forEach(msg => {
                 const item = document.createElement('div');
                 item.textContent = msg;
-                item.classList.add('new'); // Add class for animation
-                item.style.setProperty('--index', index);
                 messagesDiv.appendChild(item);
             });
 
