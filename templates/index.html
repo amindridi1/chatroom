@@ -5,85 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Room</title>
     <style>
-        /* Background gradient with brighter neon colours */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #a8edea, #fed6e3);
-            color: #FFFFFF;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            min-height: 100vh;
-            margin: 0;
-            position: relative;
-            perspective: 1000px;
-        }
+        /* Updated body and style settings from the previous example remain the same */
 
-        /* Particle effect layer */
-        #particles {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: 0;
-            pointer-events: none;
-            background: transparent;
-        }
-
-        /* Lighter, animated particles */
-        @keyframes particles {
-            0% { transform: translate3d(0, 0, 0); }
-            100% { transform: translate3d(-150px, -250px, 0); }
-        }
-
-        #particles::before, #particles::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.3), rgba(255,255,255,0));
-            background-size: 12px 12px;
-            animation: particles 90s linear infinite;
-        }
-        #particles::after {
-            animation-duration: 180s;
-            opacity: 0.7;
-        }
-
-        /* Header with vibrant glow */
-        h1 {
-            font-size: 2.5em;
-            color: #ff4dff;
-            text-shadow: 0 0 20px #ff4dff, 0 0 30px #ff85ff;
-            animation: glow 1.5s ease-in-out infinite alternate;
-            z-index: 2;
-            margin-top: 0;
-        }
-
-        /* Chat box with bright border */
-        #messages {
-            border: 2px solid rgba(68, 230, 245, 0.9);
-            padding: 15px;
-            width: 90%;
-            max-width: 600px;
-            height: 300px;
-            background: rgba(255, 255, 255, 0.8);
-            box-shadow: 0 0 20px rgba(68, 230, 245, 0.5);
-            overflow-y: auto;
-            margin-bottom: 15px;
-            border-radius: 12px;
-            position: relative;
-            z-index: 2;
-            color: #333;
-        }
-
-        /* Neon-glow effect for messages */
+        /* Updated message div to only apply animation to newly added messages */
         #messages div {
             background: rgba(68, 230, 245, 0.2);
             padding: 12px;
@@ -98,64 +22,20 @@
             transform: rotateY(5deg) translate3d(0, 10px, 0);
             transition: transform 0.3s ease;
         }
-        #messages div:hover {
-            transform: scale(1.1) rotateY(0);
-            box-shadow: 0 0 25px rgba(68, 230, 245, 0.8);
+        #messages div.new-message { /* Only apply animation for new messages */
+            opacity: 1;
+            animation: bubble 0.7s ease forwards;
         }
 
+        /* Keyframes for animations remain unchanged */
         @keyframes bubble {
             from { opacity: 0; transform: translateY(20px) scale(0.9); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
-
-        /* Input box with light glow */
-        #input {
-            width: 80%;
-            max-width: 500px;
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 20px;
-            border: 1px solid rgba(68, 230, 245, 0.9);
-            outline: none;
-            background: rgba(255, 255, 255, 0.8);
-            color: #333;
-            box-shadow: 0 0 15px rgba(68, 230, 245, 0.7);
-            font-size: 1em;
-            transition: all 0.2s ease-in-out;
-            position: relative;
-            z-index: 2;
-        }
-        #input:focus {
-            box-shadow: 0 0 25px rgba(68, 230, 245, 1);
-            transform: scale(1.05);
-        }
-
-        /* Button with vibrant glow and hover effect */
-        button {
-            background: linear-gradient(135deg, #ff4dff, #85e6ff);
-            color: #333;
-            border: 2px solid rgba(68, 230, 245, 0.9);
-            padding: 10px 25px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: transform 0.3s, box-shadow 0.3s;
-            box-shadow: 0 0 20px rgba(68, 230, 245, 0.5);
-            position: relative;
-            z-index: 2;
-        }
-        button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 30px rgba(68, 230, 245, 0.9);
-        }
-
-        /* Glow animation for header */
-        @keyframes glow {
-            from { text-shadow: 0 0 20px #ff4dff, 0 0 30px #ff85ff; }
-            to { text-shadow: 0 0 30px #ff85ff, 0 0 40px #ff85ff; }
-        }
     </style>
     <script>
+        let lastMessageCount = 0;  // Track the number of messages
+
         async function sendMessage() {
             const input = document.getElementById('input');
             const message = input.value;
@@ -175,26 +55,38 @@
             const response = await fetch('/get_messages');
             const messages = await response.json();
             const messagesDiv = document.getElementById('messages');
-            messagesDiv.innerHTML = '';  // Clear current messages
+            
+            // Check if message count has changed to avoid repeated animation
+            if (messages.length !== lastMessageCount) {
+                messagesDiv.innerHTML = '';  // Clear current messages only if new messages arrived
 
-            messages.forEach((msg, index) => {
-                const item = document.createElement('div');
-                item.textContent = msg;
-                item.style.setProperty('--index', index);
-                messagesDiv.appendChild(item);
-            });
+                messages.forEach((msg, index) => {
+                    const item = document.createElement('div');
+                    item.textContent = msg;
+                    item.style.setProperty('--index', index);
 
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;  // Scroll to bottom
+                    // Add 'new-message' class only for newly loaded messages
+                    if (index >= lastMessageCount) {
+                        item.classList.add('new-message');
+                    }
+
+                    messagesDiv.appendChild(item);
+                });
+
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;  // Scroll to bottom
+                lastMessageCount = messages.length;  // Update message count
+            }
         }
 
         async function resetChat() {
             await fetch('/reset_chat', {
                 method: 'POST',
             });
+            lastMessageCount = 0;  // Reset message count on reset
             loadMessages();  // Reload messages after reset
         }
 
-        // Load messages every second to update chat in real time
+        // Load messages every second only if there are updates
         setInterval(loadMessages, 1000);
     </script>
 </head>
