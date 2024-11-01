@@ -42,6 +42,13 @@
             messagesDiv.scrollTop = messagesDiv.scrollHeight;  // Scroll to bottom
         }
 
+        async function resetChat() {
+            await fetch('/reset_chat', {
+                method: 'POST',
+            });
+            loadMessages();  // Reload messages after reset
+        }
+
         // Periodically load messages
         setInterval(loadMessages, 1000);
     </script>
@@ -50,5 +57,6 @@
     <h1>Chat Room</h1>
     <div id="messages"></div>
     <input id="input" type="text" placeholder="Type a message..." onkeydown="if(event.key === 'Enter') sendMessage()" />
+    <button onclick="resetChat()">Reset Chat</button> <!-- Reset button -->
 </body>
 </html>
