@@ -1,17 +1,24 @@
-from flask import Flask, render_template
-from flask_socketio import SocketIO, emit
+from flask import Flask, render_template, request, jsonify
+import time
 
 app = Flask(__name__)
-socketio = SocketIO(app)
+
+# Store messages in memory for simplicity
+messages = []
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-@socketio.on('message')
-def handle_message(msg):
-    print('Message: ' + msg)
-    emit('message', msg, broadcast=True)  # Broadcast the message to all clients
+@app.route('/send_message', methods=['POST'])
+def send_message():
+    msg = request.form['message']
+    messages.append(msg)  # Add message to the list
+    return jsonify({'status': 'success'})
+
+@app.route('/get_messages', methods=['GET'])
+def get_messages():
+    return jsonify(messages)
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    app.run(debug=True)
